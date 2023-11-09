@@ -21,7 +21,13 @@ OpenAI.api_key = os.getenv('OPENAI_API_KEY')
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-
+prompt = f"""
+            Give response in concise and to the point manner. Do not provide irrelevant information.
+            """
+message = [
+    {"role": "system", "content": f"""understand the query and reply to the point response"""}, 
+    {"role": "system", "content": prompt},    
+]
 
 def get_youtube_transcript(url):
     try:
@@ -118,15 +124,23 @@ if chat_mode == "YOUTUBE TRANSCRIPTS":
         user_question = st.text_input("Ask question regarding the video")
 
         if user_question:
-            docs = knowledge_base.similarity_search(user_question)
+            # Define a system prompt
+            system_prompt = "Generate a concise and short response in 100 words"
             
-            llm = OpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.9)
+            # Concatenate the system prompt and user question
+            combined_question = f"{system_prompt} {user_question}"
+            
+            # Perform similarity search
+            docs = knowledge_base.similarity_search(combined_question)
 
+            llm = OpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.9, max_tokens=200)
+
+            # Load a question-answering chain
             chain = load_qa_chain(llm, chain_type="stuff")
+            
             with get_openai_callback() as cb:
-                response = chain.run(input_documents = docs, question = user_question)
-                print(cb)
-
+                response = chain.run(input_documents=docs, question=combined_question)
+            
             st.write(response)
 
         
@@ -167,13 +181,21 @@ elif chat_mode == "WEB SCRAPPER":
         user_question = st.text_input("Ask question regarding the website data")
 
         if user_question:
-            docs = knowledge_base.similarity_search(user_question)
+            # Define a system prompt
+            system_prompt = "Generate a concise and short response in hundred words"
             
-            llm = OpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.9)
+            # Concatenate the system prompt and user question
+            combined_question = f"{system_prompt} {user_question}"
+            
+            # Perform similarity search
+            docs = knowledge_base.similarity_search(combined_question)
 
+            llm = OpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.9, max_tokens=200)
+
+            # Load a question-answering chain
             chain = load_qa_chain(llm, chain_type="stuff")
+            
             with get_openai_callback() as cb:
-                response = chain.run(input_documents = docs, question = user_question)
-                print(cb)
-
+                response = chain.run(input_documents=docs, question=combined_question)
+            
             st.write(response)
