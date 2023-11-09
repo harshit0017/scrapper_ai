@@ -1,0 +1,8 @@
+langchain
+streamlit
+pypdf2
+faiss-cpu
+tiktoken
+openai
+transformers 
+youtube_transcript_api 
