@@ -6,3 +6,4 @@ tiktoken
 openai
 transformers 
 youtube_transcript_api 
+beautifulsoup4
